@@ -1,35 +1,26 @@
+# security.py
+
 from cryptography.fernet import Fernet
-import os
 
-def generate_key(key_file):
-    """Gera uma nova chave de criptografia e salva em um arquivo."""
-    key = Fernet.generate_key()
-    with open(key_file, 'wb') as file:
-        file.write(key)
-    return key
+def gerar_chave():
+    """Gera e salva uma chave de criptografia em um arquivo."""
+    chave = Fernet.generate_key()
+    with open("secret.key", "wb") as chave_file:
+        chave_file.write(chave)
 
-def encrypt_data(data, key):
-    """Criptografa os dados usando a chave fornecida."""
-    fernet = Fernet(key)
-    encrypted_data = fernet.encrypt(data.encode())
-    return encrypted_data
+def carregar_chave():
+    """Carrega a chave de criptografia do arquivo."""
+    return open("secret.key", "rb").read()
 
-def decrypt_data(encrypted_data, key):
-    """Descriptografa os dados usando a chave fornecida."""
-    fernet = Fernet(key)
-    decrypted_data = fernet.decrypt(encrypted_data).decode()
-    return decrypted_data
+def criptografar_arquivo(file_name):
+    """Criptografa um arquivo usando a chave gerada."""
+    chave = carregar_chave()
+    fernet = Fernet(chave)
 
-def detectar_intrusao():
-    """Função de exemplo para detectar intrusões."""
-    # Simulação: Detecta se há alguma atividade suspeita no sistema
-    return False  # Exemplo, retorna False se não há intrusão
+    with open(file_name, "rb") as file:
+        arquivo_dados = file.read()
 
-if __name__ == "__main__":
-    # Exemplo de uso das funções de segurança
-    key = generate_key("secret.key")
-    data = "Exemplo de dados sensíveis"
-    encrypted = encrypt_data(data, key)
-    print("Dados criptografados:", encrypted)
-    decrypted = decrypt_data(encrypted, key)
-    print("Dados descriptografados:", decrypted)
+    arquivo_criptografado = fernet.encrypt(arquivo_dados)
+
+    with open(file_name + ".enc", "wb") as file_enc:
+        file_enc.write(arquivo_criptografado)

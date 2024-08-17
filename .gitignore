@@ -1,0 +1,5 @@
+# .gitignore
+
+# Ignorar arquivos de chave e dados criptografados
+secret.key
+*.enc

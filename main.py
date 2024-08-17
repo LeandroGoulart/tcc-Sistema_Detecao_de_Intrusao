@@ -1,21 +1,16 @@
-from monitor import monitorar_programas
-from security import detectar_intrusao
-from alert import exibir_alerta, sugerir_contramedida
-from ai_model import treinar_modelo, carregar_dados
+from atualizacaoBancoContramedidas import atualizar_contramedidas
+import schedule
+import time
 
 def main():
-    # Inicia o monitoramento de programas
-    monitorar_programas()
-
-    # Verifica por intrusões
-    if detectar_intrusao():
-        exibir_alerta("Atenção: Uma intrusão foi detectada no sistema!")
-        contramedida = sugerir_contramedida()
-        exibir_alerta(contramedida)
-
-    # Treina o modelo de IA (simulação)
-    data = carregar_dados("dados.csv")
-    modelo = treinar_modelo(data)
+    """
+    Inicia o sistema de monitoramento e atualização.
+    """
+    schedule.every().day.at("00:00").do(atualizar_contramedidas)
+    
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 
 if __name__ == "__main__":
     main()
