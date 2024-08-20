@@ -1,21 +1,16 @@
-from extrair_contramedidas import extrair_contramedidas
-from baixar_dados import baixar_dados
-from armazenar_dados import armazenar_dados
+# atualizar_contramedidas.py
 
-def atualizar_contramedidas():
+from atualizacaoBancoContramedidas.armazenar_dados import armazenar_dados
+
+def atualizar_contramedidas(url, caminho_arquivo, versao):
     """
-    Atualiza o banco de contramedidas diariamente, iterando sobre as versões disponíveis.
+    Atualiza as contramedidas baixando os dados da URL especificada e armazenando-os no arquivo.
+
+    Args:
+        url (str): URL de onde os dados serão baixados.
+        caminho_arquivo (str): Caminho do arquivo onde os dados serão armazenados.
+        versao (float): Versão dos dados.
     """
-    versao = 1.0
-    while True:
-        url = f"https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/enterprise-attack/enterprise-attack-{versao}.json"
-        dados = baixar_dados(url)
-        
-        if not dados:
-            print("Todas as versões disponíveis foram processadas.")
-            break
-        
-        contramedidas = extrair_contramedidas(dados)
-        armazenar_dados(contramedidas, versao)
-        
-        versao += 1.0
+    # Simulação do download dos dados
+    dados = f"Dados da versão {versao} baixados de {url}"
+    armazenar_dados(dados, caminho_arquivo)

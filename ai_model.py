@@ -1,29 +1,40 @@
-import os
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
+from sklearn.ensemble import IsolationForest
+import numpy as np
+import logging
 
-def carregar_dados(data_file):
-    """Carrega e prepara os dados para o treinamento do modelo."""
-    # Simulação de carregamento de dados
-    data = ...  # Carregue os dados de um arquivo CSV ou similar
-    return data
+def detectar_anomalias(dados, params):
+    """
+    Detecta anomalias nos dados fornecidos usando o modelo IsolationForest.
 
-def treinar_modelo(data):
-    """Treina um modelo de IA para detectar ameaças."""
-    X = data.drop('label', axis=1)
-    y = data['label']
+    Args:
+        dados (list of dict): Lista de dicionários contendo os dados.
+        params (dict): Parâmetros para o modelo IsolationForest.
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-    modelo = RandomForestClassifier(n_estimators=100)
-    modelo.fit(X_train, y_train)
+    Returns:
+        list: Lista de anomalias detectadas.
+    """
+    try:
+        # Inicializa o modelo com os parâmetros fornecidos
+        modelo = IsolationForest(**params)
 
-    y_pred = modelo.predict(X_test)
-    accuracy = accuracy_score(y_test, y_pred)
-    print(f"Acurácia do modelo: {accuracy * 100:.2f}%")
+        # Verifica se todos os itens em 'dados' são dicionários
+        if not all(isinstance(item, dict) for item in dados):
+            raise ValueError("Todos os itens em 'dados' devem ser dicionários.")
 
-    return modelo
+        # Verifica se todos os itens têm o mesmo número de características
+        keys = list(dados[0].keys())
+        if not all(len(item) == len(keys) for item in dados):
+            raise ValueError("Todos os itens em 'dados' devem ter o mesmo número de características.")
 
-if __name__ == "__main__":
-    data = carregar_dados("dados.csv")
-    modelo = treinar_modelo(data)
+        # Converte os valores dos dicionários em uma matriz NumPy
+        X = np.array([list(item.values()) for item in dados])
+
+        # Ajusta o modelo e prevê anomalias
+        modelo.fit(X)
+        anomalias = modelo.predict(X)
+
+        return anomalias
+
+    except Exception as e:
+        logging.error(f"Erro ao detectar anomalias: {e}")
+        raise

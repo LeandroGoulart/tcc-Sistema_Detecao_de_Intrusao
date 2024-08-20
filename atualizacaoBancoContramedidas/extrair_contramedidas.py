@@ -1,22 +1,31 @@
+# extrair_contramedidas.py
+
 import json
 
-def extrair_contramedidas(json_data):
+def extrair_contramedidas(arquivo_json):
     """
-    Extrai as contramedidas do arquivo JSON.
-    
+    Extrai informações específicas sobre contramedidas de segurança de um arquivo JSON.
+
     Args:
-        json_data (str): String contendo os dados JSON.
-    
+        arquivo_json (str): Caminho para o arquivo JSON.
+
     Returns:
-        list: Lista de tuplas com nome do ataque e contramedida.
+        dict: Dados extraídos contendo ameaças e contramedidas.
     """
-    dados = json.loads(json_data)
-    contramedidas = []
+    with open(arquivo_json, 'r') as file:
+        dados = json.load(file)
     
-    for item in dados['objects']:
-        if item['type'] == 'intrusion-set':
-            nome_ataque = item.get('name', 'N/A')
-            descricao = item.get('description', 'N/A')
-            contramedidas.append((nome_ataque, descricao))
+    contramedidas = {}
+    for item in dados.get('threats', []):
+        nome_ameaca = item.get('name')
+        contramedida = item.get('countermeasure')
+        if nome_ameaca and contramedida:
+            contramedidas[nome_ameaca] = contramedida
     
     return contramedidas
+
+# Exemplo de uso
+if __name__ == "__main__":
+    arquivo_json = "dados.json"
+    contramedidas = extrair_contramedidas(arquivo_json)
+    print(contramedidas)
