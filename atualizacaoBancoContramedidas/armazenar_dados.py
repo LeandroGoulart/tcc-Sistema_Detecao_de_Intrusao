@@ -1,21 +1,29 @@
-from cryptography.fernet import Fernet
+import sys
+import os
 
-def armazenar_dados(contramedidas, versao):
+# Adiciona o diretório raiz ao sys.path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from security import criptografar_dados
+
+def armazenar_dados(dados, caminho_arquivo):
     """
-    Armazena os dados das contramedidas em um arquivo criptografado.
-    
+    Armazena os dados criptografados no arquivo especificado.
+
     Args:
-        contramedidas (list): Lista de contramedidas a serem armazenadas.
-        versao (float): Versão dos dados sendo armazenados.
+        dados (str): Dados a serem armazenados.
+        caminho_arquivo (str): Caminho do arquivo onde os dados serão armazenados.
     """
-    key = Fernet.generate_key()
-    cipher = Fernet(key)
-    
-    with open('secret.key', 'wb') as key_file:
-        key_file.write(key)
-    
-    dados = f"Versão: {versao}\n" + "\n".join([f"{nome}: {desc}" for nome, desc in contramedidas])
-    encrypted_data = cipher.encrypt(dados.encode())
-    
-    with open(f'programs_data_v{versao}.enc', 'wb') as file:
-        file.write(encrypted_data)
+    try:
+        dados_criptografados = criptografar_dados(dados)
+        with open(caminho_arquivo, 'w') as arquivo:
+            arquivo.write(dados_criptografados)
+        print(f"Dados armazenados com sucesso em {caminho_arquivo}.")
+    except Exception as e:
+        print(f"Erro ao armazenar dados: {e}")
+
+# Exemplo de uso
+if __name__ == "__main__":
+    dados = "Exemplo de dados a serem criptografados e armazenados."
+    caminho_arquivo = "dados_criptografados.txt"
+    armazenar_dados(dados, caminho_arquivo)
